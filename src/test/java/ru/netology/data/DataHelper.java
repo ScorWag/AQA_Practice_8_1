@@ -20,13 +20,26 @@ public class DataHelper {
     public static AuthInfo getAuthInfoSecondUser() {
         return new AuthInfo("petya", "123qwerty");
     }
+    public static AuthInfo getInvalidAuthInfo() {
+        return new AuthInfo(
+                new Faker().name().username(), new Faker().internet().password());
+    }
+
+    public static AuthInfo getInvalidLoginAuthInfo() {
+        return new AuthInfo(
+                new Faker().name().username(), "qwerty123");
+    }
+    public static AuthInfo getInvalidPasswordAuthInfo() {
+        return new AuthInfo(
+                "vasya", new Faker().internet().password());
+    }
 
     @Value
     public static class VerificationCode {
         private String verificationCode;
     }
 
-    public static VerificationCode getVerificationCodeFor(AuthInfo info) {
+    public static VerificationCode getInvalidVerificationCodeFor(AuthInfo info) {
         String code = new Faker().number().digits(6);
         return new VerificationCode(code);
     }

@@ -40,27 +40,27 @@ public class AuthorizationTest {
         open("http://localhost:9999");
     }
 
-//    @AfterAll
-//    @SneakyThrows
-//    static void clearDataBase() {
-//        var clearAuthCodes = "DELETE FROM auth_codes;";
-//        var clearCards = "DELETE FROM cards;";
-//        var clearCardTransactions = "DELETE FROM card_transactions;";
-//        var clearUsers = "DELETE FROM users;";
-//        try (
-//                var conn = DriverManager
-//                        .getConnection("jdbc:mysql://localhost:3306/app", "app", "pass");
-//                var clearAuthCodesStmt = conn.prepareStatement(clearAuthCodes);
-//                var clearCardsStmt = conn.prepareStatement(clearCards);
-//                var clearCardTransactionsStmt = conn.prepareStatement(clearCardTransactions);
-//                var clearUsersStmt = conn.prepareStatement(clearUsers)
-//        ) {
-//            clearAuthCodesStmt.executeUpdate();
-//            clearCardsStmt.executeUpdate();
-//            clearCardTransactionsStmt.executeUpdate();
-//            clearUsersStmt.executeUpdate();
-//        }
-//    }
+    @AfterAll
+    @SneakyThrows
+    static void clearDataBase() {
+        var clearAuthCodes = "DELETE FROM auth_codes;";
+        var clearCards = "DELETE FROM cards;";
+        var clearCardTransactions = "DELETE FROM card_transactions;";
+        var clearUsers = "DELETE FROM users;";
+        try (
+                var conn = DriverManager
+                        .getConnection("jdbc:mysql://localhost:3306/app", "app", "pass");
+                var clearAuthCodesStmt = conn.prepareStatement(clearAuthCodes);
+                var clearCardsStmt = conn.prepareStatement(clearCards);
+                var clearCardTransactionsStmt = conn.prepareStatement(clearCardTransactions);
+                var clearUsersStmt = conn.prepareStatement(clearUsers)
+        ) {
+            clearAuthCodesStmt.executeUpdate();
+            clearCardsStmt.executeUpdate();
+            clearCardTransactionsStmt.executeUpdate();
+            clearUsersStmt.executeUpdate();
+        }
+    }
 
     @Test
     void shouldAuthorizationWithFirstUser() {
@@ -77,18 +77,42 @@ public class AuthorizationTest {
     }
 
     @Test
-    void shouldErrorInvalidPasswordWithSecondUser() {
+    void shouldErrorInvalidUser() {
+        DataHelper.AuthInfo invalidUser = DataHelper.getInvalidAuthInfo();
+
+        new LoginPage().invalidAuthInfo(invalidUser);
+
+    }
+
+    @Test
+    void shouldErrorInvalidLoginOnly() {
+        DataHelper.AuthInfo userWithInvalidLogin = DataHelper.getInvalidLoginAuthInfo();
+
+        new LoginPage().invalidAuthInfo(userWithInvalidLogin);
+
+    }
+
+    @Test
+    void shouldErrorInvalidPasswordOnly() {
+        DataHelper.AuthInfo userWithInvalidPassword = DataHelper.getInvalidPasswordAuthInfo();
+
+        new LoginPage().invalidAuthInfo(userWithInvalidPassword);
+
+    }
+
+    @Test
+    void shouldErrorInvalidVerificationCodeWithSecondUser() {
         new LoginPage().validLogin(secondUser);
-        new VerificationPage().invalidVerify(DataHelper.getVerificationCodeFor(secondUser).getVerificationCode());
+        new VerificationPage().invalidVerify(DataHelper.getInvalidVerificationCodeFor(secondUser).getVerificationCode());
     }
     @Test
     void shouldBlockedInvalidVerificationCodeWithFirstUser() {
         new LoginPage().validLogin(firstUser);
         VerificationPage verificationPage = new VerificationPage();
-        verificationPage.invalidVerify(DataHelper.getVerificationCodeFor(firstUser).getVerificationCode());
-        verificationPage.invalidVerify(DataHelper.getVerificationCodeFor(firstUser).getVerificationCode());
-        verificationPage.invalidVerify(DataHelper.getVerificationCodeFor(firstUser).getVerificationCode());
-        verificationPage.blockedForInputTripleInvalidVerificationCode(DataHelper.getVerificationCodeFor(firstUser)
+        for (int i = 0; i < 3; i++) {
+            verificationPage.invalidVerify(DataHelper.getInvalidVerificationCodeFor(firstUser).getVerificationCode());
+        }
+        verificationPage.blockedForInputTripleInvalidVerificationCode(DataHelper.getInvalidVerificationCodeFor(firstUser)
                 .getVerificationCode());
     }
 }
