@@ -109,7 +109,7 @@ public class AuthorizationTest {
     void shouldBlockedInvalidVerificationCodeWithFirstUser() {
         new LoginPage().validLogin(firstUser);
         VerificationPage verificationPage = new VerificationPage();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             verificationPage.invalidVerify(DataHelper.getInvalidVerificationCodeFor(firstUser).getVerificationCode());
         }
         verificationPage.blockedForInputTripleInvalidVerificationCode(DataHelper.getInvalidVerificationCodeFor(firstUser)
