@@ -1,7 +1,6 @@
 package ru.netology.page;
 
 import com.codeborne.selenide.SelenideElement;
-import ru.netology.data.DataHelper;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
@@ -17,21 +16,22 @@ public class VerificationPage {
         codeField.shouldBe(visible);
     }
 
-    public DashboardPage validVerify(String verificationCode) {
+    private void verification(String verificationCode) {
         codeField.setValue(verificationCode);
         verifyButton.click();
+    }
+    public DashboardPage validVerify(String verificationCode) {
+        verification(verificationCode);
         return new DashboardPage();
     }
 
     public void invalidVerify(String verificationCode) {
-        codeField.setValue(verificationCode);
-        verifyButton.click();
+        verification(verificationCode);
         errorNotification.shouldBe(visible).shouldHave(exactText("Ошибка! Неверно указан код! Попробуйте ещё раз."));
     }
 
     public void blockedForInputTripleInvalidVerificationCode(String verificationCode) {
-        codeField.setValue(verificationCode);
-        verifyButton.click();
+        verification(verificationCode);
         $x("//*[text()='Ошибка! Превышено количество попыток ввода кода!']").shouldBe(visible);
     }
 }
